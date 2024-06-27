@@ -1,0 +1,7 @@
+version: "3"
+services:
+  colly_test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: colly_test:latest
