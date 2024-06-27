@@ -26,7 +26,7 @@ func (idb InDb) GetArticleData() {
 	result := []map[string]interface{}{}
 	columns := []string{"Index", "Title", "Url", "Shares", "Deadline", "Text"}
 	colLen := len(columns)
-	page := 518
+	page := 600
 
 	list_article := get_article_data(page)
 
