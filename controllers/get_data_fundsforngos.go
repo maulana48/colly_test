@@ -86,20 +86,53 @@ func (idb InDb) GetArticleData() {
 
 func get_article_data(page int) []Article {
 	result := []Article{}
+	var listArticleIndonesia []Article
+	var listArticleEducation []Article
 
 	for i := 1; i <= page; i++ {
-		list_article, jumlah_article := scrapper_fundsforngos(i)
+		list_article, jumlah_article := scrapper_fundsforngos("https://www2.fundsforngos.org/tag/indonesia/page", i)
 		if jumlah_article == 0 {
 			break
 		}
 
-		result = append(result, list_article...)
+		listArticleIndonesia = append(result, list_article...)
+	}
+
+	for i := 1; i <= page; i++ {
+		list_article, jumlah_article := scrapper_fundsforngos("https://www2.fundsforngos.org/category/education/page", i)
+		if jumlah_article == 0 {
+			break
+		}
+
+		listArticleEducation = append(result, list_article...)
+	}
+
+	var mapEduArticles = make(map[string]*Article)
+
+	listArticleIndonesia = getArticleDetail(listArticleIndonesia)
+	listArticleEducation = getArticleDetail(listArticleEducation)
+
+	for key := range listArticleEducation {
+		article := &listArticleEducation[key]
+		mapEduArticles[article.Title] = article
+	}
+
+	for key := range listArticleIndonesia {
+		article := &listArticleIndonesia[key]
+		included := false
+
+		if mapEduArticles[article.Title] != nil {
+			result = append(result, *article)
+			included = true
+		}
+
+		fmt.Printf("\nArticle %v included : %v\n", article.Title, included)
 	}
 
 	return result
 }
 
-func scrapper_fundsforngos(page int) (listArticle []Article, jumlah_article int) {
+func scrapper_fundsforngos(url string, page int) (listArticle []Article, jumlah_article int) {
 	// Instantiate default collector
 	fakeChrome := req.DefaultClient().ImpersonateChrome()
 
@@ -113,8 +146,6 @@ func scrapper_fundsforngos(page int) (listArticle []Article, jumlah_article int)
 	})
 
 	listArticle = []Article{}
-	var listArticleIndonesia []Article
-	var listArticleEducation []Article
 	jumlah_article = 0
 
 	// Before making a request print "Visiting ..."
@@ -156,35 +187,9 @@ func scrapper_fundsforngos(page int) (listArticle []Article, jumlah_article int)
 		segment = fmt.Sprint(page)
 	}
 
-	c.Visit(fmt.Sprintf("https://www2.fundsforngos.org/tag/indonesia/page/%v", segment))
-	listArticleIndonesia = listArticle
-	listArticle = []Article{}
+	c.Visit(fmt.Sprintf("%v/%v", url, segment))
 
-	c.Visit(fmt.Sprintf("https://www2.fundsforngos.org/category/education/page/%v", segment))
-	listArticleEducation = listArticle
-	listArticle = []Article{}
-
-	var mapEduArticles = make(map[string]*Article)
-
-	listArticleIndonesia = getArticleDetail(listArticleIndonesia)
-	listArticleEducation = getArticleDetail(listArticleEducation)
-
-	for key := range listArticleEducation {
-		article := &listArticleEducation[key]
-		mapEduArticles[article.Title] = article
-	}
-
-	for key := range listArticleIndonesia {
-		article := &listArticleIndonesia[key]
-		included := false
-
-		if mapEduArticles[article.Title] != nil {
-			listArticle = append(listArticle, *article)
-			included = true
-		}
-
-		fmt.Printf("\nArticle %v included : %v\n", article.Title, included)
-	}
+	c.Visit(fmt.Sprintf("%v/%v", url, segment))
 
 	fmt.Println(len(listArticle))
 	return
