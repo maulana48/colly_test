@@ -189,8 +189,6 @@ func scrapper_fundsforngos(url string, page int) (listArticle []Article, jumlah_
 
 	c.Visit(fmt.Sprintf("%v/%v", url, segment))
 
-	c.Visit(fmt.Sprintf("%v/%v", url, segment))
-
 	fmt.Println(len(listArticle))
 	return
 }
