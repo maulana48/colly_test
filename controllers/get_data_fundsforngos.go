@@ -109,9 +109,6 @@ func get_article_data(page int) []Article {
 
 	var mapEduArticles = make(map[string]*Article)
 
-	listArticleIndonesia = getArticleDetail(listArticleIndonesia)
-	listArticleEducation = getArticleDetail(listArticleEducation)
-
 	for key := range listArticleEducation {
 		article := &listArticleEducation[key]
 		mapEduArticles[article.Title] = article
@@ -128,6 +125,8 @@ func get_article_data(page int) []Article {
 
 		fmt.Printf("\nArticle %v included : %v\n", article.Title, included)
 	}
+
+	result = getArticleDetail(result)
 
 	return result
 }
