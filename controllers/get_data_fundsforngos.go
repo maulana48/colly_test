@@ -95,7 +95,7 @@ func get_article_data(page int) []Article {
 			break
 		}
 
-		listArticleIndonesia = append(result, list_article...)
+		listArticleIndonesia = append(listArticleIndonesia, list_article...)
 	}
 
 	for i := 1; i <= page; i++ {
@@ -104,7 +104,7 @@ func get_article_data(page int) []Article {
 			break
 		}
 
-		listArticleEducation = append(result, list_article...)
+		listArticleEducation = append(listArticleEducation, list_article...)
 	}
 
 	var mapEduArticles = make(map[string]*Article)
